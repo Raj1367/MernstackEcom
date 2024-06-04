@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser')
 const connectDB = require('./config/database')
 const router = require('./Routes/index')
 const app = express()
-const PORT = 8080 || process.env.PORT
+const PORT = 10000 || process.env.PORT
 
 require('dotenv').config()
 
