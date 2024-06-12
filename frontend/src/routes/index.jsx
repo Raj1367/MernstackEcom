@@ -13,6 +13,10 @@ import Cart from "../Pages/Cart";
 import SearchProduct from "../Pages/SearchProduct";
 import CheckoutPage from "../Pages/CheckoutPage";
 import Orders from "../Pages/UserOrders";
+import UserProfile from "../Pages/UserProfile";
+import PaymentSuccess from "../Pages/PaymentSuccess";
+import PaymentFailed from "../Pages/PaymentFailed";
+import MyOrders from "../Pages/MyOrders";
 
 const Router = createBrowserRouter([
     {
@@ -56,6 +60,14 @@ const Router = createBrowserRouter([
                 element: <CheckoutPage></CheckoutPage>
             },
             {
+                path: "/paymentsuccess",
+                element: <PaymentSuccess></PaymentSuccess>
+            },
+            {
+                path: "/paymentfailed",
+                element: <PaymentFailed></PaymentFailed>
+            },
+            {
                 path: "/adminpanel",
                 element: <AdminPanel />,
                 children: [
@@ -69,9 +81,21 @@ const Router = createBrowserRouter([
                     },
                     {
                         path: "orders",
-                        element: <Orders/>
+                        element: <Orders />
                     }
                 ]
+            },
+            {
+                path: "/userprofile",
+                element: <UserProfile />,
+                children: [
+                    {
+                        path: "myorders",
+                        element: <MyOrders/>
+                    },
+                    
+                ]
+
             },
         ]
     }

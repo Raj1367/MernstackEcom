@@ -68,28 +68,26 @@ const Cart = () => {
     }
 
     const decreaseCartQty = async (id, qty) => {
-        if (qty >= 1) {
-            const response = await fetch(SummaryApi.updateCartQuantity.url, {
-                method: SummaryApi.updateCartQuantity.method,
-                credentials: 'include',
-                headers: {
-                    "content-type": 'application/json'
-                },
-                body: JSON.stringify(
-                    {
-                        _id: id,
-                        quantity: qty - 1
-                    }
-                )
-            })
+        const response = await fetch(SummaryApi.updateCartQuantity.url, {
+            method: SummaryApi.updateCartQuantity.method,
+            credentials: 'include',
+            headers: {
+                "content-type": 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    _id: id,
+                    quantity: qty - 1
+                }
+            )
+        })
 
-            const responseData = await response.json()
+        const responseData = await response.json()
 
 
-            if (responseData.success) {
-                toast.success(responseData.message)
-                fetchData()
-            }
+        if (responseData.success) {
+            toast.success(responseData.message)
+            fetchData()
         }
     }
 
@@ -120,6 +118,8 @@ const Cart = () => {
     const totalQuantity = data.reduce((prev, curr) => { return prev + curr.quantity }, 0)
     const totalPrice = data.reduce((prev, curr) => { return prev + (curr.quantity * curr.productId.sellingPrice) }, 0)
 
+
+
     return (
         <div>
             <div className="bg-red-600 text-white py-4 flex  justify-center items-center">
@@ -131,7 +131,7 @@ const Cart = () => {
                 <div className="text-center text-lg my-3 ">
                     {
                         data.length === 0 && !loading && (
-                            <p className="bg-white py-5">No Data</p>
+                            <p className="bg-white py-5 text-2xl uppercase font-semibold">your cart is Empty</p>
                         )
                     }
                 </div>
@@ -153,42 +153,43 @@ const Cart = () => {
                                         })
                                 )
                                 : (
-                                    data.map((product, index) => {
-                                        return (
-                                            <div
+                                    data[0] && (
+                                        data.map((product, index) => {
+                                            return (
+                                                <div
+                                                    key={product?._id + "Add to Cart loading"}
+                                                    className="w-full bg-white  my-4 border border-slate-300 rounded grid grid-cols-[128px,1fr] shadow-md">
 
-                                                key={product?._id + "Add to Cart loading"}
-                                                className="w-full bg-white  my-4 border border-slate-300 rounded grid grid-cols-[128px,1fr] shadow-md">
+                                                    <div className="w-28 h-full bg-slate-200 flex justify-center items-center border-e-2 border-slate-300">
+                                                        <img src={product?.productId.productImage[0]} alt={product.productName} className="w-24 h-24 object-scale-down mix-blend-multiply" />
+                                                    </div>
 
-                                                <div className="w-28 h-full bg-slate-200 flex justify-center items-center border-e-2 border-slate-300">
-                                                    <img src={product?.productId.productImage[0]} alt={product.productName} className="w-24 h-24 object-scale-down mix-blend-multiply" />
-                                                </div>
+                                                    <div className='md:p-4 p-2'>
+                                                        <Link to={"/product/" + product?.productId._id}> <h2 className="md:text-lg text-md text-ellipsis line-clamp-1 font-semibold w-[60%] cursor-pointer">{product?.productId.productName}</h2></Link>
+                                                        <p className="capitalize text-slate-500 text-sm">{product?.productId.category}</p>
 
-                                                <div className='md:p-4 p-2'>
-                                                    <Link to={"/product/" + product?.productId._id}> <h2 className="md:text-lg text-md text-ellipsis line-clamp-1 font-semibold w-[60%] cursor-pointer">{product?.productId.productName}</h2></Link>
-                                                    <p className="capitalize text-slate-500 text-sm">{product?.productId.category}</p>
-
-                                                    <div className="flex justify-between items-center relative">
-                                                        <div className="flex md:flex-row flex-col items-center md:gap-3 md:mt-1 mt-2">
-                                                            <p className="md:text-lg text-sm text-red-600 font-semibold">{displayINRCurrency(product?.productId.sellingPrice)}</p>
-                                                            <p className="md:text-md text-xs text-slate-500 line-through">{displayINRCurrency(product?.productId.price)}</p>
-                                                        </div>
-
-                                                        <div className="flex justify-center items-center md:gap-6 gap-2 lg:px-2 absolute bottom-7 right-0">
-                                                            <div className="flex items-center md:gap-3 gap-2">
-                                                                <button className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white md:w-6 md:h-6 w-5 h-5 flex justify-center items-center rounded transition-all text-sm cursor-pointer" onClick={() => decreaseCartQty(product?._id, product?.quantity)}>-</button>
-                                                                <span className="font-semibold rounded">{product?.quantity}</span>
-                                                                <button className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white md:w-6 md:h-6 w-5 h-5 flex justify-center items-center rounded transition-all text-sm cursor-pointer" onClick={() => increaseCartQty(product?._id, product?.quantity)}>+</button>
+                                                        <div className="flex justify-between items-center relative">
+                                                            <div className="flex md:flex-row flex-col items-center md:gap-3 md:mt-1 mt-2">
+                                                                <p className="md:text-lg text-sm text-red-600 font-semibold">{displayINRCurrency(product?.productId.sellingPrice)}</p>
+                                                                <p className="md:text-md text-xs text-slate-500 line-through">{displayINRCurrency(product?.productId.price)}</p>
                                                             </div>
-                                                            <div className="flex items-center cursor-pointer">
-                                                                <MdDeleteForever className="md:text-3xl text-2xl text-slate-700" onClick={() => deleteCartProduct(product?._id)} />
+
+                                                            <div className="flex justify-center items-center md:gap-6 gap-2 lg:px-2 absolute bottom-7 right-0">
+                                                                <div className="flex items-center md:gap-3 gap-2">
+                                                                    <button className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white md:w-6 md:h-6 w-5 h-5 flex justify-center items-center rounded transition-all text-sm cursor-pointer" onClick={product?.quantity === 1 ? (() => deleteCartProduct(product?._id)) : (() => decreaseCartQty(product?._id, product?.quantity))}>-</button>
+                                                                    <span className="font-semibold rounded">{product?.quantity}</span>
+                                                                    <button className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white md:w-6 md:h-6 w-5 h-5 flex justify-center items-center rounded transition-all text-sm cursor-pointer" onClick={() => increaseCartQty(product?._id, product?.quantity)}>+</button>
+                                                                </div>
+                                                                <div className="flex items-center cursor-pointer">
+                                                                    <MdDeleteForever className="md:text-3xl text-2xl text-slate-700" onClick={() => deleteCartProduct(product?._id)} />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )
-                                    })
+                                            )
+                                        })
+                                    )
                                 )
                         }
                     </div>
@@ -226,10 +227,20 @@ const Cart = () => {
                                         <p className="text-slate-500">Shipping and taxes will be calculated during checkout</p>
                                     </div>
 
-                                    <div className="flex justify-center items-center gap-8 m-6">
-                                        <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium">Return to Homepage</button></Link>
-                                        <Link to="/checkout"><button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-2 px-6 rounded font-medium">Checkout</button></Link>
-                                    </div>
+
+                                    {
+                                        totalQuantity === 0 ? (
+                                            <div className="flex justify-center items-center gap-8 m-6">
+                                                <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium">Return to Homepage</button></Link>
+                                                <button disabled className="border bg-slate-400 text-white py-2 px-6 rounded font-medium cursor-not-allowed">Checkout</button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex justify-center items-center gap-8 m-6">
+                                                <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium">Return to Homepage</button></Link>
+                                                <Link to="/checkout"><button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-2 px-6 rounded font-medium">Checkout</button></Link>
+                                            </div>
+                                        )
+                                    }
 
                                 </div>
                             )
@@ -270,11 +281,19 @@ const Cart = () => {
                                             <p className="md:text-md text-sm  text-slate-500">Shipping and taxes will be calculated during checkout</p>
                                         </div>
 
-                                        <div className="flex justify-center items-center gap-8 m-6">
-                                            <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium md:text-lg text-sm ">Return to Homepage</button></Link>
-                                            <Link to="/checkout"><button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-2 px-6 rounded font-medium md:text-lg text-sm">Checkout</button></Link>
-                                        </div>
-
+                                        {
+                                            totalQuantity === 0 ? (
+                                                <div className="flex justify-center items-center gap-8 m-6">
+                                                    <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium">Return to Homepage</button></Link>
+                                                    <button disabled className="border bg-slate-400 text-white py-2 px-6 rounded font-medium cursor-not-allowed">Checkout</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex justify-center items-center gap-8 m-6">
+                                                    <Link to="/"> <button className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white py-2 px-2 rounded font-medium text-sm">Return to Homepage</button></Link>
+                                                    <Link to="/checkout"><button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-2 px-6 rounded font-medium text-sm">Checkout</button></Link>
+                                                </div>
+                                            )
+                                        }
                                     </div>
                                 )
                             }

@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react'
 import displayINRCurrency from '../Helpers/DisplayCurrency'
 import SummaryApi from '../Common'
 import { toast } from 'react-toastify';
-import useRazorpay from "react-razorpay";
+import { Link } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
 
 const CheckoutPage = () => {
-
-    const [Razorpay] = useRazorpay();
 
     const [data, setData] = useState({
         firstName: "",
@@ -22,7 +21,6 @@ const CheckoutPage = () => {
     })
 
     const [productData, setProductData] = useState([])
-
 
     const totalQuantity = productData.reduce((prev, curr) => { return prev + curr.quantity }, 0)
     const subTotalPrice = productData.reduce((prev, curr) => { return prev + (curr.quantity * curr.productId.sellingPrice) }, 0)
@@ -43,10 +41,9 @@ const CheckoutPage = () => {
     }
 
 
-
-
-
     const handleSubmit = async (e) => {
+
+        const stripePromise = await loadStripe("pk_test_51POXvzP1CcJ6oeB2UhigWpJN3y0kpadSdIaHPZFDBVXCgbNSAG7RXL6LLth1k8iVRyByXBfgU2jYqo3kMYam12Cc00rHmH8jRc")
 
         e.preventDefault()
         const dataResponse = await fetch(SummaryApi.userCheckout.url, {
@@ -69,28 +66,31 @@ const CheckoutPage = () => {
             toast.error(response.message)
         }
 
-        const options = {
-            key: "rzp_test_vv1FCZvuDRF6lQ",
-            key_secret: "P4JAUwn4VdE6xDLJ6p2Zy8RQ",
-            amount: parseInt(totalPrice) * 100,
-            currency: "INR",
-            name: "Raj Enterprises",
-            order_id: data._id,
-            handler: function (response) {
-                const paymentId = response.razorpay_payment_id;
-                console.log("paymant id", paymentId, data);
+        const resp = await fetch(SummaryApi.userPayment.url, {
+            method: SummaryApi.userPayment.method,
+            credentials: 'include',
+            headers: {
+                "content-type": "application/json"
             },
-            theme: {
-                color: "#4233cc",
-            },
-        };
 
-        var pay = new window.Razorpay(options);
-        pay.open();
+            body: JSON.stringify({ cartData: productData })
+        })
+
+        const responseData = await resp.json()
+
+        if (responseData?.id) {
+            stripePromise.redirectToCheckout({ sessionId: responseData.id })
+        }
+
+        console.log("userpaymentData", responseData)
+
+
+
     }
 
 
     const fetchData = async () => {
+
         const response = await fetch(SummaryApi.cartProductView.url, {
             method: SummaryApi.cartProductView.method,
             credentials: 'include',
@@ -194,8 +194,8 @@ const CheckoutPage = () => {
                             </div> */}
 
                                 <div className="flex justify-center lg:gap-10 gap-6 items-center my-10">
-                                    <button className="border-2  border-red-600 bg-white text-red-600 hover:border-red-600 hover:text-white hover:bg-red-600 py-2 px-6 rounded font-medium md:text-lg text-sm">Return to Cart</button>
-                                    <button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-2 px-8 rounded font-medium md:text-lg text-sm">Pay Now</button>
+                                    <Link to="/cart"><button className="border-2  border-red-600 bg-white text-red-600 hover:border-red-600 hover:text-white hover:bg-red-600 py-1 px-6 rounded font-medium md:text-lg text-sm">Return to Cart</button></Link>
+                                    <button className="border bg-red-600 text-white hover:border-red-600 hover:text-white hover:bg-red-700 py-1 px-8 rounded font-medium md:text-lg text-sm">Pay Now</button>
                                 </div>
 
                             </form>
@@ -279,6 +279,7 @@ const CheckoutPage = () => {
 
 
                 </div>
+                
             </div>
 
 

@@ -4,6 +4,8 @@ import ProductCategory from '../Helpers/ProductCategory'
 import { useEffect } from 'react'
 import SummaryApi from '../Common'
 import SearchProductCard from '../Components/SearchProductCard'
+import { IoHome } from "react-icons/io5";
+import { Link } from 'react-router-dom'
 
 const SearchProductCategorywise = () => {
 
@@ -91,12 +93,14 @@ const SearchProductCategorywise = () => {
   useEffect(() => {
   }, [sortBy])
 
+  const [menuDisplay, setMenuDisplay] = useState(false)
+
 
   return (
     <div>
       <div className="container mx-auto px-4">
         {/* desktop */}
-        <div className="hidden lg:grid grid-cols-[250px,1fr]">
+        <div className="hidden md:grid grid-cols-[250px,1fr]">
           {/* left side */}
           <div className="bg-white p-2 min-h-[calc(100vh-120px)] overflow-y-scroll">
 
@@ -154,43 +158,51 @@ const SearchProductCategorywise = () => {
 
       {/* mobile view */}
       <div className="md:hidden mt-3 flex flex-col justify-center items-center">
-        <button className="border-2 border-red-600  text-red-500 rounded font-medium px-4 py-1 uppercase text-md hover:bg-red-600 hover:text-white transition-all active:bg-red-600 active:text-white">Filter by</button>
-        <div className="bg-white mt-3 border border-slate-300 w-72 rounded shadow-md ">
-          <div className="my-2">
-            <h3 className="font-medium px-4 mb-1">Price:</h3>
-            <div className="grid grid-cols-2 justify-items-center">
-              <div className="flex items-center gap-1">
-                <input type="radio" name="sortBy" checked={sortBy === "asc"} value={"asc"} onChange={handleSortBy} />
-                <label className="text-sm">low to high</label>
-              </div>
-              <div className="flex items-center gap-1">
-                <input type="radio" name="sortBy" checked={sortBy === "asc"} value={"asc"} onChange={handleSortBy} />
-                <label className="text-sm">high to low</label>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div className="my-2">
-            <h3 className="font-medium px-4  mb-1">Category:</h3>
-            <div className="grid grid-cols-2 justify-items-center">
-              {
-                ProductCategory.map((categoryName, index) => {
-                  return (
-                    <div className='flex items-center justify-start gap-1 text-sm mb-1'>
-                      <input type='checkbox' name={"category"} checked={selectCategory[categoryName?.value]} value={categoryName?.value} id={categoryName?.value} onChange={handleSelectCategory} />
-                      <label htmlFor={categoryName?.value}>{categoryName?.label}</label>
-                    </div>
-                  )
-                })
-              }
-            </div>
-          </div>
+        <div className="flex flex-col justify-center items-center gap-4">
+        <Link to="/"><div className="border-2 border-red-600 text-red-600 p-2 rounded-full hover:bg-red-600 hover:text-white"><IoHome fontSize={23} /></div></Link>
+          <button onClick={() => setMenuDisplay(preve => !preve)} className="border-2 border-red-600  text-red-500 rounded font-medium px-4 py-1 uppercase text-md hover:bg-red-600 hover:text-white transition-all active:bg-red-600 active:text-white">Filter</button>
         </div>
+        {
+          menuDisplay && (
+            <div className={`bg-white mt-3 border border-slate-300 w-72 rounded shadow-md transition-all ${menuDisplay ? "" : "hidden"}`} >
+              <div className="my-2">
+                <h3 className="font-medium px-4 mb-1">Price:</h3>
+                <div className="grid grid-cols-2 justify-items-center">
+                  <div className="flex items-center gap-1">
+                    <input type="radio" name="sortBy" checked={sortBy === "asc"} value={"asc"} onChange={handleSortBy} />
+                    <label className="text-sm">low to high</label>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <input type="radio" name="sortBy" checked={sortBy === "asc"} value={"asc"} onChange={handleSortBy} />
+                    <label className="text-sm">high to low</label>
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <div className="my-2">
+                <h3 className="font-medium px-4  mb-1">Category:</h3>
+                <div className="grid grid-cols-2 justify-items-center">
+                  {
+                    ProductCategory.map((categoryName, index) => {
+                      return (
+                        <div className='flex items-center justify-start gap-1 text-sm mb-1'>
+                          <input type='checkbox' name={"category"} checked={selectCategory[categoryName?.value]} value={categoryName?.value} id={categoryName?.value} onChange={handleSelectCategory} />
+                          <label htmlFor={categoryName?.value}>{categoryName?.label}</label>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+          )
+        }
       </div>
 
-       <div>
-          <p className="font-medium text-md text-slate-800 my-2 text-center">Search Results : {data.length}</p>
-          <div className="min-h-[calc(100vh-120px)]  overflow-y-scroll max-h-[calc(100vh-120px)]">
+      <div className="md:hidden">
+        <p className="font-medium text-md text-slate-800 my-2 text-center">Search Results : {data.length}</p>
+        <div className="min-h-[calc(100vh-120px)]  overflow-y-scroll max-h-[calc(100vh-120px)]">
+          <div className="flex justify-center">
             {
               data.length !== 0 && (
                 <SearchProductCard data={data} loading={loading} />
@@ -198,6 +210,7 @@ const SearchProductCategorywise = () => {
             }
           </div>
         </div>
+      </div>
 
     </div>
   )

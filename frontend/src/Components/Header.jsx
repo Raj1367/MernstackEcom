@@ -12,20 +12,20 @@ import Role from '../Common/Role';
 import Context from '../Context';
 const Header = () => {
 
-  
+
 
   const user = useSelector(state => state.user.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const searchInput=useLocation()
-  const URLsearch=new URLSearchParams(searchInput?.search)
-  const searchQuery=URLsearch.getAll("q")
-  const [search,setSearch]=useState(searchQuery)
+  const searchInput = useLocation()
+  const URLsearch = new URLSearchParams(searchInput?.search)
+  const searchQuery = URLsearch.getAll("q")
+  const [search, setSearch] = useState(searchQuery)
 
   const [menuDisplay, setMenuDisplay] = useState(false)
   const context = useContext(Context)
 
-  console.log("search input",searchInput?.search.split("=")[0])
+  console.log("search input", searchInput?.search.split("=")[0])
 
   const handleLogout = async () => {
     const fetchData = await fetch(SummaryApi.logoutUser.url, {
@@ -103,6 +103,16 @@ const Header = () => {
                   <div className="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded hidden md:block">
                     <nav>
                       <Link to="/adminpanel/allproducts" className="whitespace-nowrap hover:bg-slate-100 p-2" onClick={() => setMenuDisplay(preve => !preve)} >Admin panel</Link>
+                    </nav>
+                  </div>
+                )
+              }
+
+              {
+                user?.role === Role.GENERAL && menuDisplay && (
+                  <div className="absolute bg-white bottom-0 top-11 h-fit px-5 py-2 shadow-lg rounded hidden md:block">
+                    <nav>
+                      <Link to="/userprofile" className="whitespace-nowrap hover:bg-slate-100 p-2 font-semibold" onClick={() => setMenuDisplay(preve => !preve)} >User Profile</Link>
                     </nav>
                   </div>
                 )

@@ -82,8 +82,16 @@ const SummaryApi = {
         url: `${backendDomain}/api/usercheckout`,
         method: 'post'
     },
-    userOrders:{
+    userOrders: {
         url: `${backendDomain}/api/userorders`,
+        method: 'get'
+    },
+    userPayment: {
+        url: `${backendDomain}/api/checkout`,
+        method: 'post'
+    },
+    orderList:{
+         url: `${backendDomain}/api/orderlist`,
         method: 'get'
     }
 
